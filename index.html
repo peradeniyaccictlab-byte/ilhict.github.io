@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Interactive Learning Hub (ILH)</title>
+<style>
+:root{--ink:#12263f;--paper:#f7f5ef;--teal:#0e7c7b;--sun:#f2b705;--red:#c0392b;--line:#d9d5c7;--muted:#5b6678;
+--font:"Segoe UI","Noto Sans Sinhala","Iskoola Pota","Nirmala UI","Noto Sans",system-ui,sans-serif}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:var(--font);background:var(--paper);color:var(--ink);font-size:20px;line-height:1.5;-webkit-tap-highlight-color:transparent}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer;border:0;border-radius:14px;min-height:56px;padding:10px 24px;font-weight:700;touch-action:manipulation}
+button:disabled{opacity:.5;cursor:wait}
+:focus-visible{outline:4px solid var(--sun);outline-offset:2px}
+[hidden]{display:none!important}
+header{background:var(--ink);color:#fff;padding:20px 28px;display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between;border-bottom:8px solid var(--sun)}
+h1{margin:0;font-size:clamp(26px,4vw,40px);line-height:1.15}
+.sub{margin:4px 0 0;font-size:clamp(18px,2.4vw,24px);color:var(--sun)}
+#bHome{background:var(--sun);color:var(--ink)}
+.banner{background:var(--red);color:#fff;padding:14px 28px;font-weight:700;text-align:center}
+main{max-width:1280px;margin:0 auto;padding:24px 28px 60px}
+h2.t{margin:0 0 18px;font-size:clamp(24px,3vw,32px)}
+.choose{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;max-width:900px;margin:40px auto}
+.choose button{min-height:220px;border-radius:22px;font-size:30px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;border:4px solid transparent}
+.choose small{font-size:19px;font-weight:400}
+.choose .s{background:var(--teal);color:#fff}.choose .t{background:#fff;border-color:var(--ink);color:var(--ink)}
+.choose .ic{font-size:64px;line-height:1}
+.welcome{text-align:center;font-size:24px;margin-top:30px}
+.tools input{width:100%;min-height:56px;padding:10px 18px;border:3px solid var(--line);border-radius:14px;background:#fff;margin-bottom:16px}
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:24px}
+.chip{background:#fff;border:3px solid var(--line);min-height:52px;padding:6px 20px;font-weight:600}
+.chip.on{background:var(--teal);border-color:var(--teal);color:#fff}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:20px}
+.lesson{background:#fff;border:3px solid var(--line);border-left:12px solid var(--teal);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:10px;text-align:left;min-height:160px;font-weight:400}
+.lesson:active{transform:scale(.98)}
+.lesson .ic{font-size:34px;line-height:1}
+.lesson h3{margin:0;font-size:22px;line-height:1.3}
+.lesson .meta{margin-top:auto;color:var(--muted);font-size:17px}
+.empty{grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--muted);border:3px dashed var(--line);border-radius:16px}
+.panel{background:#fff;border:3px solid var(--line);border-radius:16px;padding:22px;margin-bottom:28px}
+.panel h2{margin:0 0 14px;font-size:26px}
+.share{background:#e9f6f5;border-color:var(--teal)}
+.share code{display:inline-block;background:#fff;border:2px solid var(--teal);border-radius:10px;padding:4px 14px;font-size:24px;font-weight:700;margin:4px 8px 4px 0;user-select:all}
+form{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+label{display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:18px}
+label input,label select,.inp{min-height:56px;padding:10px 14px;border:3px solid var(--line);border-radius:12px;background:#fff;font-weight:400}
+label input[type=file]{padding:12px;border-style:dashed;background:#f1f8f8;cursor:pointer}
+form .wide{grid-column:1/-1}
+progress{width:100%;height:18px}
+.pri{background:var(--teal);color:#fff}.sec{background:#e8e4d6}.dan{background:var(--red);color:#fff}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.admin ul{list-style:none;margin:0;padding:0}
+.admin li{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:2px solid var(--line)}
+.admin li span{overflow-wrap:anywhere}
+.hint{color:var(--muted);margin:0 0 12px;font-size:18px}
+.msg{margin:10px 0 0;font-weight:700}.msg.err{color:var(--red)}.msg.ok{color:var(--teal)}
+.modal{position:fixed;inset:0;background:#0009;display:flex;align-items:center;justify-content:center;padding:16px;z-index:10}
+.box{background:#fff;border-radius:18px;padding:26px;width:min(440px,100%)}
+.box h2{margin:0 0 12px}
+.box input{width:100%;min-height:64px;font-size:30px;text-align:center;letter-spacing:.4em;border:3px solid var(--line);border-radius:12px;margin-bottom:12px}
+#viewer{position:fixed;inset:0;background:var(--ink);z-index:20;display:flex;flex-direction:column}
+.vbar{display:flex;gap:10px;align-items:center;padding:10px 16px;color:#fff}
+.vbar h2{flex:1;margin:0;font-size:22px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.stage{flex:1;background:#000;display:flex;align-items:center;justify-content:center;min-height:0}
+.stage iframe{width:100%;height:100%;border:0;background:#fff}
+.stage img,.stage video{max-width:100%;max-height:100%;object-fit:contain}
+.note{color:#fff;text-align:center;padding:20px}
+@media (max-width:600px){body{font-size:18px}header,main{padding-left:16px;padding-right:16px}}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>Interactive Learning Hub (ILH)</h1>
+    <p class="sub">අන්තර්ක්‍රියාකාරී ඉගෙනුම් මධ්‍යස්ථානය</p>
+  </div>
+  <button id="bHome" hidden>← Change mode</button>
+</header>
+<div class="banner" id="offline" hidden>Cannot reach the ILH server. Make sure the teacher computer is running the server (start.bat) and you opened the correct address.</div>
+
+<main>
+  <!-- Landing: nothing else is visible until a mode is chosen -->
+  <section id="landing">
+    <p class="welcome">Welcome! Choose how you want to use the hub.</p>
+    <div class="choose">
+      <button class="s" id="bStu"><span class="ic">🎓</span>Student View<small>Open and study lessons</small></button>
+      <button class="t" id="bTea"><span class="ic">🔒</span>Teacher Mode<small>PIN required</small></button>
+    </div>
+  </section>
+
+  <section id="student" hidden>
+    <h2 class="t" id="stuTitle"></h2>
+    <div class="tools"><input id="q" type="search" placeholder="Search lessons" aria-label="Search lessons"></div>
+    <div class="chips" id="chips" role="group" aria-label="Classes"></div>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <section id="teacher" hidden>
+    <h2 class="t">Teacher Dashboard</h2>
+
+    <div class="panel share">
+      <h2>Share with students (same LAN / Wi-Fi)</h2>
+      <p class="hint">Students open one of these addresses in their browser. They can view lessons without a PIN.</p>
+      <div id="shareUrls"></div>
+    </div>
+
+    <div class="panel admin">
+      <h2>1. Classes</h2>
+      <p class="hint">Add the classes that study this subject (for example Grade 6, Grade 7, Grade 10-A).</p>
+      <div class="row" style="margin-bottom:12px">
+        <input class="inp" id="clsName" maxlength="40" placeholder="Class name, e.g. Grade 10-A" aria-label="Class name">
+        <button class="pri" id="addCls">Add class</button>
+        <span id="clsMsg" class="msg" role="status"></span>
+      </div>
+      <ul id="clsList"></ul>
+    </div>
+
+    <div class="panel">
+      <h2>2. Upload a lesson</h2>
+      <p class="hint" id="noCls">Add at least one class above before uploading lessons.</p>
+      <form id="addForm" autocomplete="off">
+        <label>Class
+          <select id="fCls"></select></label>
+        <label>Lesson Title
+          <input id="fTitle" maxlength="120" placeholder="Unit 1 - Introduction"></label>
+        <label>Content Type
+          <select id="fType">
+            <option value="file">Upload File (PDF, HTML, Image, MP4)</option>
+            <option value="web">Web Link</option>
+            <option value="youtube">YouTube Link</option>
+          </select></label>
+        <label id="wFile" class="wide">Choose file
+          <input id="fFile" type="file" accept=".pdf,.html,.htm,.png,.jpg,.jpeg,.gif,.webp,.mp4,.webm,application/pdf,image/*,video/mp4,text/html"></label>
+        <label id="wUrl" class="wide" hidden>URL
+          <input id="fUrl" type="text" inputmode="url" placeholder="https://example.com/lesson"></label>
+        <progress id="prog" class="wide" max="100" value="0" hidden></progress>
+        <div class="wide row">
+          <button class="pri" id="saveBtn" type="submit">Upload lesson</button>
+          <span id="addMsg" class="msg" role="status"></span>
+        </div>
+      </form>
+    </div>
+
+    <div class="panel admin">
+      <h2>3. Manage lessons</h2>
+      <ul id="adminList"></ul>
+    </div>
+
+    <div class="panel">
+      <h2>Settings</h2>
+      <div class="row" style="margin-bottom:14px">
+        <input class="inp" id="subjName" maxlength="60" placeholder="Subject name" aria-label="Subject name">
+        <button class="sec" id="saveSubj">Update subject name</button>
+        <span id="subjMsg" class="msg" role="status"></span>
+      </div>
+      <div class="row">
+        <input class="inp" id="newPin" type="password" inputmode="numeric" maxlength="12" placeholder="New PIN" aria-label="New PIN">
+        <button class="sec" id="savePin">Update PIN</button>
+        <span id="pinMsg" class="msg" role="status"></span>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="modal" id="pinModal" hidden>
+  <div class="box" role="dialog" aria-modal="true" aria-labelledby="pinH">
+    <h2 id="pinH">Enter Teacher PIN</h2>
+    <input id="pinIn" type="password" inputmode="numeric" maxlength="12" autocomplete="off" aria-label="PIN">
+    <p id="pinErr" class="msg err" role="alert"></p>
+    <div class="row">
+      <button class="pri" id="pinOk">Unlock</button>
+      <button class="sec" id="pinNo">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div id="viewer" hidden>
+  <div class="vbar">
+    <h2 id="vTitle"></h2>
+    <button class="sec" id="vTab">Open in new tab</button>
+    <button class="dan" id="vClose">Close ✕</button>
+  </div>
+  <div class="stage" id="stage"></div>
+</div>
+
+<script>
+(function(){
+"use strict";
+var ICON={web:"🌐",youtube:"▶️",pdf:"📄",html:"🧩",image:"🖼️",video:"🎬"};
+var LABEL={web:"Web link",youtube:"YouTube video",pdf:"PDF document",html:"Interactive page",image:"Image",video:"Video"};
+var ALLOWED=["pdf","html","htm","png","jpg","jpeg","gif","webp","mp4","webm"];
+var $=function(i){return document.getElementById(i)};
+var lessons=[],classes=[],subject="Science",maxMb=4096,urls=[],filter="all",curUrl="",view="landing";
+var token="";
+
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function ext(s){return(String(s).split(/[?#]/)[0].split(".").pop()||"").toLowerCase()}
+function ytId(u){var m=/(?:youtu\.be\/|v=|embed\/|shorts\/|live\/)([\w-]{11})/.exec(u);return m?m[1]:null}
+function safe(u){return!/^\s*(javascript|data|vbscript):/i.test(u)}
+function clsName(id){var c=classes.filter(function(x){return x.id===id})[0];return c?c.name:"Unassigned"}
+function count(id){return lessons.filter(function(l){return l.cls===id}).length}
+function fileUrl(l){return"/files/"+encodeURIComponent(l.file)}
+function kind(l){
+  if(l.type==="youtube")return"youtube";
+  if(l.type==="web")return"web";
+  var e=ext(l.fileName||"");
+  if(e==="pdf")return"pdf";
+  if(/^(png|jpe?g|gif|webp)$/.test(e))return"image";
+  if(/^(mp4|webm)$/.test(e))return"video";
+  return"html";
+}
+
+/* ---------- Server calls ---------- */
+function lockTeacher(){token="";show("landing");openPin()}
+function api(method,url,body){
+  var h={};if(token)h["x-token"]=token;
+  var o={method:method,headers:h};
+  if(body!==undefined){h["Content-Type"]="application/json";o.body=JSON.stringify(body)}
+  return fetch(url,o).then(function(r){
+    return r.json().catch(function(){return{}}).then(function(d){
+      if(r.status===401&&url!=="/api/login"){lockTeacher()}
+      if(!r.ok)throw new Error(d.error||("Error "+r.status));
+      return d;
+    });
+  },function(){throw new Error("Cannot reach the server.")});
+}
+function loadData(){
+  return api("GET","/api/data").then(function(d){
+    classes=d.classes||[];lessons=d.lessons||[];subject=d.subject||subject;maxMb=d.maxMb||maxMb;urls=d.urls||[];
+    $("offline").hidden=true;refresh();
+  }).catch(function(){$("offline").hidden=false});
+}
+setInterval(function(){if(view==="student"&&$("viewer").hidden)loadData()},15000); /* new lessons appear automatically */
+
+/* ---------- Rendering ---------- */
+function renderChips(){
+  if(filter!=="all"&&!classes.some(function(c){return String(c.id)===String(filter)}))filter="all";
+  var h='<button class="chip'+(filter==="all"?" on":"")+'" data-f="all">All classes</button>';
+  classes.forEach(function(c){h+='<button class="chip'+(String(filter)===String(c.id)?" on":"")+'" data-f="'+c.id+'">'+esc(c.name)+'</button>'});
+  $("chips").innerHTML=h;
+  $("chips").hidden=!classes.length;
+}
+function renderGrid(){
+  var q=$("q").value.trim().toLowerCase();
+  var list=lessons.filter(function(l){
+    return(filter==="all"||String(l.cls)===String(filter))&&(!q||l.title.toLowerCase().indexOf(q)>-1);
+  });
+  if(!list.length){
+    var none=!lessons.length;
+    $("grid").innerHTML='<div class="empty"><p><strong>'+(none?"No lessons yet.":"No lessons found.")+'</strong></p><p>'+(none?"Ask your teacher to upload lessons.":"Try another class or search term.")+'</p></div>';
+    return;
+  }
+  $("grid").innerHTML=list.map(function(l){
+    var k=kind(l);
+    return'<button class="lesson" data-id="'+l.id+'"><span class="ic">'+ICON[k]+'</span><h3>'+esc(l.title)+'</h3><span class="meta">'+esc(clsName(l.cls))+' &middot; '+LABEL[k]+'</span></button>';
+  }).join("");
+}
+function renderAdmin(){
+  $("shareUrls").innerHTML=urls.length?urls.map(function(u){return"<code>"+esc(u)+"</code>"}).join(""):"<p class='hint'>No network connection found on this computer. Connect it to the school LAN / Wi-Fi.</p>";
+  $("clsList").innerHTML=classes.length?classes.map(function(c){
+    var n=count(c.id);
+    return'<li><span><strong>'+esc(c.name)+'</strong> <small>('+n+' lesson'+(n===1?"":"s")+')</small></span><button class="dan" data-delc="'+c.id+'">Delete class</button></li>';
+  }).join(""):"<li>No classes yet.</li>";
+  var sel=$("fCls").value;
+  $("fCls").innerHTML=classes.map(function(c){return'<option value="'+c.id+'">'+esc(c.name)+'</option>'}).join("");
+  if(sel)$("fCls").value=sel;
+  $("noCls").hidden=classes.length>0;
+  $("addForm").hidden=!classes.length;
+  $("adminList").innerHTML=lessons.length?lessons.map(function(l){
+    return'<li><span>'+ICON[kind(l)]+" <strong>"+esc(l.title)+'</strong><br><small>'+esc(clsName(l.cls))+' &middot; '+esc(l.fileName||l.path)+'</small></span><button class="dan" data-del="'+l.id+'">Delete</button></li>';
+  }).join(""):"<li>No lessons yet.</li>";
+}
+function refresh(){
+  $("stuTitle").textContent=subject+" Lessons";
+  if(document.activeElement!==$("subjName"))$("subjName").value=subject;
+  renderChips();renderGrid();renderAdmin();
+}
+
+/* ---------- Mode switching: only one view is ever visible ---------- */
+function show(v){
+  view=v;
+  ["landing","student","teacher"].forEach(function(x){$(x).hidden=(x!==v)});
+  $("bHome").hidden=(v==="landing");
+  window.scrollTo(0,0);
+}
+function openPin(){$("pinIn").value="";$("pinErr").textContent="";$("pinModal").hidden=false;setTimeout(function(){$("pinIn").focus()},50)}
+function closePin(){$("pinModal").hidden=true}
+function tryPin(){
+  api("POST","/api/login",{pin:$("pinIn").value}).then(function(d){
+    token=d.token;closePin();loadData().then(function(){show("teacher")});
+  }).catch(function(e){$("pinErr").textContent=e.message;$("pinIn").value="";$("pinIn").focus()});
+}
+
+/* ---------- Viewer ---------- */
+function openLesson(l){
+  var k=kind(l),st=$("stage"),el;
+  if(k==="web"){if(safe(l.path))window.open(l.path,"_blank","noopener");return}
+  if(k==="youtube"&&!ytId(l.path)){window.open(l.path,"_blank","noopener");return}
+  st.innerHTML="";
+  if(k==="youtube"){
+    el=document.createElement("iframe");
+    el.src="https://www.youtube-nocookie.com/embed/"+ytId(l.path)+"?rel=0";
+    el.allow="accelerometer; autoplay; encrypted-media; fullscreen; picture-in-picture";
+    el.setAttribute("allowfullscreen","");
+    curUrl="https://www.youtube.com/watch?v="+ytId(l.path);
+  }else{
+    curUrl=fileUrl(l);
+    if(k==="image"){el=document.createElement("img");el.src=curUrl;el.alt=l.title}
+    else if(k==="video"){el=document.createElement("video");el.src=curUrl;el.controls=true;el.autoplay=true}
+    else{el=document.createElement("iframe");el.src=curUrl}
+  }
+  el.onerror=function(){st.innerHTML='<p class="note">Could not open this lesson.</p>'};
+  st.appendChild(el);
+  $("vTitle").textContent=l.title;
+  $("viewer").hidden=false;
+}
+function closeViewer(){$("viewer").hidden=true;$("stage").innerHTML=""}
+
+/* ---------- Events ---------- */
+$("bStu").onclick=function(){loadData();show("student")};
+$("bTea").onclick=openPin;
+$("bHome").onclick=function(){if(view==="teacher")token="";show("landing")}; /* leaving Teacher Mode locks it again */
+$("pinOk").onclick=tryPin;$("pinNo").onclick=closePin;
+$("pinIn").onkeydown=function(e){if(e.key==="Enter")tryPin()};
+$("q").oninput=renderGrid;
+$("chips").onclick=function(e){var b=e.target.closest("[data-f]");if(b){filter=b.dataset.f;renderChips();renderGrid()}};
+$("grid").onclick=function(e){
+  var b=e.target.closest("[data-id]");if(!b)return;
+  var l=lessons.filter(function(x){return String(x.id)===b.dataset.id})[0];if(l)openLesson(l);
+};
+$("vClose").onclick=closeViewer;
+$("vTab").onclick=function(){if(curUrl&&safe(curUrl))window.open(curUrl,"_blank")};
+document.addEventListener("keydown",function(e){
+  if(e.key==="Escape"){if(!$("viewer").hidden)closeViewer();else if(!$("pinModal").hidden)closePin()}
+});
+
+/* Classes */
+function addClass(){
+  var v=$("clsName").value.trim(),m=$("clsMsg");m.className="msg err";
+  if(!v){m.textContent="Enter a class name.";return}
+  api("POST","/api/classes",{name:v}).then(function(){
+    $("clsName").value="";m.className="msg ok";m.textContent="Class added.";return loadData();
+  }).catch(function(e){m.textContent=e.message});
+}
+$("addCls").onclick=addClass;
+$("clsName").onkeydown=function(e){if(e.key==="Enter")addClass()};
+$("clsList").onclick=function(e){
+  var b=e.target.closest("[data-delc]");if(!b)return;
+  var c=classes.filter(function(x){return String(x.id)===b.dataset.delc})[0];if(!c)return;
+  var n=count(c.id);
+  if(!confirm('Delete class "'+c.name+'"'+(n?" and its "+n+" lesson"+(n===1?"":"s"):"")+"?"))return;
+  api("DELETE","/api/classes/"+c.id).then(loadData).catch(function(err){alert(err.message)});
+};
+
+/* Upload form */
+function syncType(){
+  var f=$("fType").value==="file";
+  $("wFile").hidden=!f;$("wUrl").hidden=f;
+  $("saveBtn").textContent=f?"Upload lesson":"Save lesson";
+  $("fUrl").placeholder=$("fType").value==="youtube"?"https://www.youtube.com/watch?v=...":"https://example.com/lesson";
+}
+$("fType").onchange=syncType;
+$("fFile").onchange=function(){
+  var f=this.files[0];
+  if(f&&!$("fTitle").value.trim())$("fTitle").value=f.name.replace(/\.[^.]+$/,"");
+};
+function uploadFile(f,cls,title){
+  return new Promise(function(res,rej){
+    var x=new XMLHttpRequest();
+    x.open("POST","/api/upload?cls="+cls+"&title="+encodeURIComponent(title)+"&name="+encodeURIComponent(f.name));
+    x.setRequestHeader("x-token",token);
+    x.upload.onprogress=function(e){
+      if(e.lengthComputable){var p=Math.round(e.loaded/e.total*100);$("prog").value=p;$("addMsg").textContent="Uploading... "+p+"%"}
+    };
+    x.onload=function(){
+      var d={};try{d=JSON.parse(x.responseText)}catch(e){}
+      if(x.status>=200&&x.status<300)res(d);
+      else{if(x.status===401)lockTeacher();rej(new Error(d.error||"Upload failed."))}
+    };
+    x.onerror=function(){rej(new Error("Cannot reach the server."))};
+    x.send(f);
+  });
+}
+$("addForm").onsubmit=function(e){
+  e.preventDefault();
+  var m=$("addMsg"),type=$("fType").value,title=$("fTitle").value.trim(),cls=Number($("fCls").value),btn=$("saveBtn");
+  m.className="msg err";
+  if(!title||!cls){m.textContent="Please enter a lesson title.";return}
+  function done(){
+    m.className="msg ok";m.textContent="Lesson added to "+clsName(cls)+". Students can see it now.";
+    $("fTitle").value="";$("fFile").value="";$("fUrl").value="";$("prog").hidden=true;btn.disabled=false;return loadData();
+  }
+  function bad(err){m.className="msg err";m.textContent=err.message;$("prog").hidden=true;btn.disabled=false}
+  if(type==="file"){
+    var f=$("fFile").files[0];
+    if(!f){m.textContent="Please choose a file to upload.";return}
+    if(ALLOWED.indexOf(ext(f.name))<0){m.textContent="Unsupported file. Use PDF, HTML, PNG, JPG, GIF, WEBP or MP4.";return}
+    if(f.size>maxMb*1048576){m.textContent="This file is larger than the "+maxMb+" MB limit.";return}
+    btn.disabled=true;m.className="msg";m.textContent="Uploading... 0%";$("prog").value=0;$("prog").hidden=false;
+    uploadFile(f,cls,title).then(done).catch(bad);
+  }else{
+    var url=$("fUrl").value.trim();
+    if(!url){m.textContent="Please enter a URL.";return}
+    if(!safe(url)){m.textContent="This link is not allowed.";return}
+    if(type==="youtube"&&!ytId(url)){m.textContent="This is not a valid YouTube link.";return}
+    btn.disabled=true;
+    api("POST","/api/links",{cls:cls,title:title,type:type,url:url}).then(done).catch(bad);
+  }
+};
+$("adminList").onclick=function(e){
+  var b=e.target.closest("[data-del]");if(!b)return;
+  var l=lessons.filter(function(x){return String(x.id)===b.dataset.del})[0];
+  if(!l||!confirm('Delete "'+l.title+'"?'))return;
+  api("DELETE","/api/lessons/"+l.id).then(loadData).catch(function(err){alert(err.message)});
+};
+
+/* Settings */
+$("saveSubj").onclick=function(){
+  var v=$("subjName").value.trim(),m=$("subjMsg");
+  if(!v){m.className="msg err";m.textContent="Enter a subject name.";return}
+  api("POST","/api/settings",{subject:v}).then(function(){m.className="msg ok";m.textContent="Subject name updated.";return loadData()})
+    .catch(function(e){m.className="msg err";m.textContent=e.message});
+};
+$("savePin").onclick=function(){
+  var v=$("newPin").value.trim(),m=$("pinMsg");
+  api("POST","/api/settings",{pin:v}).then(function(){$("newPin").value="";m.className="msg ok";m.textContent="PIN updated."})
+    .catch(function(e){m.className="msg err";m.textContent=e.message});
+};
+
+/* ---------- Init ---------- */
+syncType();loadData();show("landing");
+})();
+</script>
+</body>
+</html>
